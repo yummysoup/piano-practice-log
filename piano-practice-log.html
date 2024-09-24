@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      body {
+        background: white;
+        font-size: 17px;
+        font-family: Arial, sans-serif;
+      }
+
+      @media print {
+        .controls {
+          display: none;
+        }
+      }
+
+      .controls {
+        margin-bottom: 2em;
+        border: 0.2em dashed #ddd;
+        padding: 1.5em;
+        background-color: #eee;
+        border-radius: 1em
+      }
+      label {
+        display: block;
+        margin: 0.5em 0;
+        position: relative;
+      }
+
+      label input {
+        left: 10em;
+        position: absolute;
+      }
+
+      h1 {
+        margin: 0 0 0.5em 0;
+        padding: 0;
+        font-size: 1.5em;
+        font-family: Arial, sans-serif;
+      }
+
+      .week {
+        width: 16em;
+        margin: 0 0.5em 0.5em 0;
+        display: inline-block;
+      }
+
+      .week h2 {
+        text-align: center;
+        font-size: 1em;
+        font-weight: bold;
+        font-family: arial;
+        margin: 0;
+        padding: 0.15em;
+        color: white;
+        background-color: #333;
+        border-radius: 0.3em 0.3em 0 0;
+      }
+      
+      .container {
+        background: #999;
+        border-radius: 0 0 0.3em 0.3em;
+      }
+
+      h3 {
+        text-align: center;
+        margin: 1em 0.2em 0 0.9em;
+        font-size: 0.8em;
+        writing-mode: vertical-lr;
+        text-orientation: upright;
+        font-family: monospace;
+        text-transform: uppercase;
+        color: #666;
+        font-weight: bold;
+        background: #ffffcc;
+        border-radius: 0.3em;
+        white-space: pre;
+     }
+      .container {
+        border-top: 0.1em solid #cc0000;
+        width: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+      }
+      
+    .black h3 {
+      margin-left: 0.7em;
+    }
+    .white {
+        position: relative;
+        background: white;
+        width: 14.2857%;
+        height: 8em;
+        margin: 0 0.1em 0.1em 0.1em;
+        border-radius: 0 0 0.5em 0.5em;
+      }
+      
+      .white.black:after {
+        content: "";
+        position: absolute;
+        top: -0.1em;
+        background: rgb(17, 11, 11);
+        right: -30%;
+        width: 50%;
+        height: 60%;
+        z-index: 1;
+        border-radius: 0 0 0.3em 0.3em;
+      }
+
+
+    </style>
+
+    <script>
+      const generate = () => {
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const template = document.querySelector('#keyboardtemplate');
+        const result = document.querySelector('#result');
+        const resultName = document.querySelector('#resultname');
+        const startDate = new Date(document.querySelector('#startdate').valueAsNumber);
+        const weekCount = document.querySelector('#weekcount').valueAsNumber;
+        const name = document.querySelector('#nameinput').value;
+        const getDateLabel = (date) => {
+          return `${months[date.getUTCMonth()]} ${date.getUTCDate()}`;
+        }
+
+        result.innerHTML = '';
+        resultName.innerText = name;
+
+        for(let weekNum=0; weekNum < weekCount; weekNum++) {
+          const weekStartDate = new Date(startDate.getTime() + 1000 * 60 * 60 * 24 * 7 * weekNum);
+
+          const endDate = new Date(weekStartDate.getTime() + 1000 * 60 * 60 * 24 * 6);
+
+          const label = `${getDateLabel(weekStartDate)} to ${getDateLabel(endDate)}`;
+
+          const cloned = template.content.cloneNode(true);
+          cloned.querySelector('h2').appendChild(document.createTextNode(label));
+          Array.from(cloned.querySelectorAll('h3')).forEach((lbl, idx) => {
+            const keyDate = new Date(weekStartDate.getTime() + 1000 * 60 * 60 * 24 * idx);
+            let dayNum = `${keyDate.getUTCDate()}`;
+            if (dayNum.length == 1) dayNum = ` ${dayNum}`;
+            lbl.appendChild(document.createTextNode(`${days[keyDate.getUTCDay()]} ${dayNum}`));
+          });
+          result.appendChild(cloned);
+
+        }
+
+      }
+    </script>
+    
+</head>
+<body>
+  <div class="controls">
+    <form onsubmit="return false">
+      <h1>Piano Practice Log</h1>
+      <p>Generate a dated practice log between weekly lessons, starting on the day after the lesson. You can print this then check off (or colour) the white keys as you practice.</p>
+      <p>When printing, make sure you enable "background graphics" and change orientation to "landscape".</p>
+      <label>Name <input id="nameinput" value="Student Name"></label>
+      <label>Start Date <input id="startdate" type="date" value="2024-02-14"></label>
+      <label>Week Count <input id="weekcount" type="number" value="12"></label>
+      <input type="button" onclick="generate()" value="Generate">
+    </form>
+  </div>
+  <template id="keyboardtemplate">
+    <div class="week">
+      <h2></h2>
+      <div class="container">
+        <!-- white and black keys -->
+        <div class="key white black" ><h3></h3></div>
+        <div class="key white black" ><h3></h3></div>
+        <!-- white keys -->
+        <div class="key white" ><h3></h3></div>
+         <!-- white and black keys -->
+        <div class="key white black" ><h3></h3></div>
+        <div class="key white black" ><h3></h3></div>
+        <div class="key white black" ><h3></h3></div>
+        <!-- white keys -->
+        <div class="key white" ><h3></h3></div>
+      </div>  
+    </div>
+  </template>
+  <h1 id="resultname"></h1>
+  <div id="result"></div>
+
+  <script>
+    // set date to today
+    (()=>{
+      const now = new Date();
+      document.querySelector('#startdate').valueAsNumber = (now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+    })();
+  </script>
+</body>
+</html>
